@@ -27,7 +27,7 @@ while (true) {
     let {feedback} = await prompt.get([{
         name: 'feedback',
         required: true,
-        pattern: /(?=\b\w{5}\b)([nygNYG][nygNYG][nygNYG][nygNYG][nygNYG])/
+        pattern: /((?=\b\w{5}\b)([nygNYG][nygNYG][nygNYG][nygNYG][nygNYG]))|nope|NOPE/
     }]);
 
     feedback = feedback.toUpperCase();
@@ -36,6 +36,12 @@ while (true) {
         // Game over!
         await printWin("WE WON !");
         process.exit(0);
+    }
+
+    if (feedback === "NOPE") {
+        let idx = wordslist.indexOf(bestWord);
+        if (idx !== -1) wordslist.splice(idx, 1);
+        continue
     }
 
     for (let i in bestWord) {
