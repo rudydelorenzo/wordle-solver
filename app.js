@@ -3,7 +3,10 @@ import figlet from 'figlet';
 import gradient from 'gradient-string';
 import prompt from 'prompt';
 
-let wordslist = fs.readFileSync("wlist_match11.txt", 'utf8').split("\n").filter(word => word.length === 5).map(word => word.toUpperCase());
+const debug = true;
+const wordLength = 5;
+
+let wordList = fs.readFileSync("wlist_match11.txt", 'utf8').split("\n").filter(word => word.length === wordLength).map(word => word.toUpperCase());
 let lettersMisplaced = {}; // {A: [], B: [], C: [], ...} Letter followed by places where it ISNT
 let lettersEliminated = []; // [A, B, C, D, ...]
 let lettersPlaced = {}; // {A: 0, O: 2, ...}
@@ -18,16 +21,17 @@ while (true) {
         process.exit(0);
     }
 
-    console.log(`SUGGESTION: ${bestWord} (${((bestScore/totalScore)*100).toFixed(2)}% confidence)`);
     console.log(figlet.textSync(bestWord, {
         horizontalLayout: 'fitted'
     }));
+    console.log(`${bestWord} (${((bestScore/totalScore)*100).toFixed(2)}% confidence)`);
+
 
     prompt.start();
     let {feedback} = await prompt.get([{
         name: 'feedback',
         required: true,
-        pattern: /((?=\b\w{5}\b)([nygNYG][nygNYG][nygNYG][nygNYG][nygNYG]))|nope|NOPE/
+        pattern: RegExp(`((?=\\b\\w{${wordLength}}\\b)([nygNYG][nygNYG][nygNYG][nygNYG][nygNYG]))|nope|NOPE`)
     }]);
 
     feedback = feedback.toUpperCase();
@@ -39,8 +43,8 @@ while (true) {
     }
 
     if (feedback === "NOPE") {
-        let idx = wordslist.indexOf(bestWord);
-        if (idx !== -1) wordslist.splice(idx, 1);
+        let idx = wordList.indexOf(bestWord);
+        if (idx !== -1) wordList.splice(idx, 1);
         continue
     }
 
@@ -96,8 +100,8 @@ async function printLoss(text) {
 
 
 function suggestWord() {
-    let regexElimination = [[],[],[],[],[]];
-    for (let i = 0; i < 5; i++) {
+    let regexElimination = Array(wordLength).fill([]);
+    for (let i = 0; i < wordLength; i++) {
         let unavailLetters = []
         for (let letter in lettersMisplaced) {
             if (lettersMisplaced[letter].includes(i)) unavailLetters.push(letter);
@@ -110,7 +114,7 @@ function suggestWord() {
 
     let regexString = "";
     mainLoop:
-    for (let i = 0; i < 5; i++) {
+    for (let i = 0; i < wordLength; i++) {
         for (let letter in lettersPlaced) {
             if (lettersPlaced[letter] === i) {
                 regexString = regexString.concat(letter);
@@ -130,24 +134,23 @@ function suggestWord() {
         }
     }
 
-    console.log(`REGEX: ${regexString}`);
+    if (debug) console.log(`REGEX: ${regexString}`);
 
     let regex = RegExp(regexString);
 
     // remove most implausible words
-    wordslist = wordslist.filter(word => word.match(regex));
+    wordList = wordList.filter(word => word.match(regex));
 
     // perky optimization (remove words that dont have all the yellow letters)
     for (let letter in lettersMisplaced) {
-        wordslist = wordslist.filter(word => word.includes(letter));
+        wordList = wordList.filter(word => word.includes(letter));
     }
 
-
-    console.log(wordslist);
+    if (debug) console.log(wordList);
 
     // calculate most common letters
     let counts = {};
-    for (let word of wordslist) {
+    for (let word of wordList) {
         for (let i = 0; i < word.length; i++) {
             let key = word[i];
             if (!counts[key]) {
@@ -161,7 +164,7 @@ function suggestWord() {
     let bestWord = "";
     let bestScore = 0;
     let totalScore = 0;
-    for (let word of wordslist) {
+    for (let word of wordList) {
         let wordScore = 0;
         let wordSet = [...new Set(word)]
         for (let i = 0; i < wordSet.length; i++) {
