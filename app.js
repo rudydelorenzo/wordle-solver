@@ -11,15 +11,15 @@ let lettersPlaced = {}; // {A: 0, O: 2, ...}
 await printTitle("Welcome to Emir");
 
 while (true) {
-    let suggestedWord = suggestWord();
+    let {bestWord, bestScore, totalScore} = suggestWord();
 
-    if (suggestedWord === "") {
+    if (bestWord === "") {
         await printLoss("OUT OF WORDS !");
         process.exit(0);
     }
 
-    console.log(`SUGGESTION: ${suggestedWord}`);
-    console.log(figlet.textSync(suggestedWord, {
+    console.log(`SUGGESTION: ${bestWord} (${((bestScore/totalScore)*100).toFixed(2)}% confidence)`);
+    console.log(figlet.textSync(bestWord, {
         horizontalLayout: 'fitted'
     }));
 
@@ -38,9 +38,9 @@ while (true) {
         process.exit(0);
     }
 
-    for (let i in suggestedWord) {
+    for (let i in bestWord) {
         let color = feedback[i];
-        let letter = suggestedWord[i];
+        let letter = bestWord[i];
         if (color === "N") {
             lettersEliminated.push(letter);
             lettersEliminated = [...new Set(lettersEliminated)];
@@ -154,11 +154,13 @@ function suggestWord() {
     // calculate word scores, return highest
     let bestWord = "";
     let bestScore = 0;
+    let totalScore = 0;
     for (let word of wordslist) {
         let wordScore = 0;
         let wordSet = [...new Set(word)]
         for (let i = 0; i < wordSet.length; i++) {
-            wordScore += counts[wordSet[i]]
+            wordScore += counts[wordSet[i]];
+            totalScore += counts[wordSet[i]];
         }
         if (wordScore > bestScore) {
             bestWord = word;
@@ -166,6 +168,6 @@ function suggestWord() {
         }
     }
 
-    return bestWord;
+    return {bestWord, bestScore, totalScore};
 
 }
