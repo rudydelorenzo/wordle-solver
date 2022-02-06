@@ -45,11 +45,11 @@ while (true) {
             lettersEliminated.push(letter);
             lettersEliminated = [...new Set(lettersEliminated)];
         } else if (color === "Y") {
-            if (!lettersEliminated[letter]) {
-                lettersEliminated[letter] = [];
+            if (!lettersMisplaced[letter]) {
+                lettersMisplaced[letter] = [];
             }
-            lettersEliminated[letter].push(Number(i));
-            lettersEliminated[letter] = [...new Set(lettersEliminated[letter])];
+            lettersMisplaced[letter].push(Number(i));
+            lettersMisplaced[letter] = [...new Set(lettersMisplaced[letter])];
         } else {
             lettersPlaced[letter] = Number(i);
         }
@@ -128,7 +128,14 @@ function suggestWord() {
 
     let regex = RegExp(regexString);
 
+    // remove most implausible words
     wordslist = wordslist.filter(word => word.match(regex));
+
+    // perky optimization (remove words that dont have all the yellow letters)
+    for (let letter in lettersMisplaced) {
+        wordslist = wordslist.filter(word => word.includes(letter));
+    }
+
 
     console.log(wordslist);
 
