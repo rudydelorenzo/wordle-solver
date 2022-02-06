@@ -4,7 +4,7 @@ import gradient from 'gradient-string';
 import prompt from 'prompt';
 
 const debug = true;
-const wordLength = 5;
+const wordLength = 6;
 
 let wordList = fs.readFileSync("wlist_match11.txt", 'utf8').split("\n").filter(word => word.length === wordLength).map(word => word.toUpperCase());
 let lettersMisplaced = {}; // {A: [], B: [], C: [], ...} Letter followed by places where it ISN'T
@@ -18,6 +18,7 @@ while (true) {
 
     if (bestWord === "") {
         await printLoss("OUT OF WORDS !");
+        console.log("¯\\_(ツ)_/¯")
         process.exit(0);
     }
 
@@ -31,12 +32,12 @@ while (true) {
     let {feedback} = await prompt.get([{
         name: 'feedback',
         required: true,
-        pattern: RegExp(`((?=\\b\\w{${wordLength}}\\b)([nygNYG][nygNYG][nygNYG][nygNYG][nygNYG]))|nope|NOPE`)
+        pattern: RegExp(`((?=\\b\\w{${wordLength}}\\b)([nygNYG][nygNYG][nygNYG][nygNYG][nygNYG]))|nope|NOPE|g|G`)
     }]);
 
     feedback = feedback.toUpperCase();
 
-    if (feedback === "GGGGG") {
+    if (feedback === "GGGGG" || feedback === "G") {
         // Game over!
         await printWin("WE WON !");
         process.exit(0);
