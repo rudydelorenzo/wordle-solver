@@ -6,6 +6,8 @@ import prompt from 'prompt';
 const debug = false;
 const wordLength = 5;
 
+console.clear();
+
 let wordList = fs.readFileSync("wlist_match11.txt", 'utf8').split("\n").filter(word => word.length === wordLength).map(word => word.toUpperCase());
 let lettersMisplaced = {}; // {A: [], B: [], C: [], ...} Letter followed by places where it ISN'T
 let lettersEliminated = []; // [A, B, C, D, ...]
