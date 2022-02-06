@@ -7,7 +7,7 @@ const debug = true;
 const wordLength = 5;
 
 let wordList = fs.readFileSync("wlist_match11.txt", 'utf8').split("\n").filter(word => word.length === wordLength).map(word => word.toUpperCase());
-let lettersMisplaced = {}; // {A: [], B: [], C: [], ...} Letter followed by places where it ISNT
+let lettersMisplaced = {}; // {A: [], B: [], C: [], ...} Letter followed by places where it ISN'T
 let lettersEliminated = []; // [A, B, C, D, ...]
 let lettersPlaced = {}; // {A: 0, O: 2, ...}
 
@@ -72,7 +72,8 @@ async function printTitle(text) {
         figlet.text(text, {
             horizontalLayout: 'fitted'
         }, function (err, data) {
-            resolve(console.log(gradient.instagram(data)));
+            console.log(gradient.instagram(data))
+            resolve();
         });
     }))
 }
@@ -82,7 +83,8 @@ async function printWin(text) {
         figlet.text(text, {
             horizontalLayout: 'fitted'
         }, function (err, data) {
-            resolve(console.log(gradient.pastel(data)));
+            console.log(gradient.pastel(data))
+            resolve();
         });
     }))
 }
@@ -92,7 +94,8 @@ async function printLoss(text) {
         figlet.text(text, {
             horizontalLayout: 'fitted'
         }, function (err, data) {
-            resolve(console.log(gradient.passion(data)));
+            console.log(gradient.passion(data))
+            resolve();
         });
     }))
 }
