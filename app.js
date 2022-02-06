@@ -3,8 +3,8 @@ import figlet from 'figlet';
 import gradient from 'gradient-string';
 import prompt from 'prompt';
 
-const debug = true;
-const wordLength = 6;
+const debug = false;
+const wordLength = 5;
 
 let wordList = fs.readFileSync("wlist_match11.txt", 'utf8').split("\n").filter(word => word.length === wordLength).map(word => word.toUpperCase());
 let lettersMisplaced = {}; // {A: [], B: [], C: [], ...} Letter followed by places where it ISN'T
@@ -150,7 +150,7 @@ function suggestWord() {
         wordList = wordList.filter(word => word.includes(letter));
     }
 
-    if (debug) console.log(wordList);
+    if (debug || wordList.length < 6) console.log(wordList);
 
     // calculate most common letters
     let counts = {};
