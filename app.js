@@ -64,7 +64,7 @@ while (true) {
 }
 
 async function printTitle(text) {
-    return new Promise(((resolve, reject) => {
+    return new Promise(((resolve) => {
         figlet.text(text, {
             horizontalLayout: 'fitted'
         }, function (err, data) {
@@ -74,7 +74,7 @@ async function printTitle(text) {
 }
 
 async function printWin(text) {
-    return new Promise(((resolve, reject) => {
+    return new Promise(((resolve) => {
         figlet.text(text, {
             horizontalLayout: 'fitted'
         }, function (err, data) {
@@ -84,7 +84,7 @@ async function printWin(text) {
 }
 
 async function printLoss(text) {
-    return new Promise(((resolve, reject) => {
+    return new Promise(((resolve) => {
         figlet.text(text, {
             horizontalLayout: 'fitted'
         }, function (err, data) {
@@ -153,7 +153,7 @@ function suggestWord() {
             if (!counts[key]) {
                 counts[key] = 0;
             }
-            counts[key]++;
+            if (!(i === word.length-1 && key === "S")) counts[key]++;
         }
     }
 
@@ -168,6 +168,8 @@ function suggestWord() {
             wordScore += counts[wordSet[i]];
             totalScore += counts[wordSet[i]];
         }
+        // point subtractions for s and ing terminations
+        if (word.match(/(\w*s\b)|(\w*ing\b)/)) wordScore *= 0.75;
         if (wordScore > bestScore) {
             bestWord = word;
             bestScore = wordScore;
